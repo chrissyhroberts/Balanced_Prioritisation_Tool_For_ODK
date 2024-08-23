@@ -12,9 +12,9 @@ The coordinates are a Hamming distance metric, so the furthest extreme corners a
 
 The topmost apex is then the three vertexes are at 
 
-top   :  -6,-6,12
-left  :  -6,12,-6
-right :  12,-6,-6
+top   :  -6,-6,12  
+left  :  -6,12,-6  
+right :  12,-6,-6  
 
 As you can see, a higher value in one vertex is associated with a lower score in the other two dimensions.
 This means that the scores on each 'axis' are not numerically important per se, but rather that the relationships between the numbers mean something
