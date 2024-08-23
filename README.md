@@ -18,7 +18,10 @@ right :  12,-6,-6
 
 As you can see, a higher value in one vertex is associated with a lower score in the other two dimensions.
 This means that the scores on each 'axis' are not numerically important per se, but rather that the relationships between the numbers mean something
-It also provides for a pretty easy to understand visual device
+It also provides for a pretty easy to understand visual device.
+
+You can probably easily transpose this to a square chart by doubling all the negative numbers on account of those coming from the side of the triangle that's half as long as the other one. 
+
 
 https://github.com/user-attachments/assets/551da741-6dda-4a41-8d1c-3434fce3ae3e
 
