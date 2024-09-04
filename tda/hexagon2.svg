@@ -204,9 +204,9 @@
 <path d="M500.0,448 L499.99999999999994,68.0" stroke="red" stroke-width="3" marker-end="url(#arrowhead)" pointer-events="none"/>
 <path d="M500.0,448 L829.0896534380868,638.0" stroke="red" stroke-width="3" marker-end="url(#arrowhead)" pointer-events="none"/>
 <path d="M500.0,448 L170.9103465619133,638.0" stroke="red" stroke-width="3" marker-end="url(#arrowhead)" pointer-events="none"/>
-<text x="500.0" y="25" font-family="Verdana" font-size="25" fill="black" text-anchor="middle">People</text>
-<text x="100" y="680" font-family="Verdana" font-size="25" fill="black" text-anchor="middle">Animals</text>
-<text x="915" y="680" font-family="Verdana" font-size="25" fill="black" text-anchor="middle">Environment</text>
+<text x="500.0" y="25" font-family="Verdana" font-size="25" fill="black" text-anchor="middle">Government</text>
+<text x="100" y="680" font-family="Verdana" font-size="25" fill="black" text-anchor="middle">Community</text>
+<text x="910" y="680" font-family="Verdana" font-size="25" fill="black" text-anchor="middle">Private Sector</text>
 
   </g>
 </svg>

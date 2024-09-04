@@ -10,7 +10,7 @@ central_z = -12  # Central hexagon's z index
 show_labels = False  # Set to False to hide labels
 label_font_size = 12  # Font size for hexagon labels
 apex_font_size = 25  # Font size for apex labels
-hexagon_stroke_color = "none"  # Stroke color for hexagons
+hexagon_stroke_color = "#808080"  # Stroke color for hexagons
 
 # Arrow and triangle offsets
 arrow_offset_x = 0  # Offset for arrows on the x-axis
@@ -28,9 +28,9 @@ canvas_height = 800  # Height of the SVG canvas
 
 # Define the labels and their positions for the apexes
 apex_labels = {
-    "apex1": {"text": "People", "x": canvas_width / 2, "y": 25},  # Top apex
-    "apex2": {"text": "Animals", "x": 100, "y": 680},  # Bottom-left apex
-    "apex3": {"text": "Environment", "x": 915, "y": 680}  # Bottom-right apex
+    "apex1": {"text": "Government", "x": canvas_width / 2, "y": 25},  # Top apex
+    "apex2": {"text": "Community", "x": 100, "y": 680},  # Bottom-left apex
+    "apex3": {"text": "Companies", "x": 910, "y": 680}  # Bottom-right apex
 }
 
 # Function to create a single hexagon path
@@ -133,7 +133,7 @@ full_svg = f"""
 """
 
 # Save the SVG content to a file
-with open("hexagon.svg", "w") as file:
+with open("hexagon_grey_borders_2.svg", "w") as file:
     file.write(full_svg)
 
-"hexagon.svg"
+"hexagon_grey_borders.svg"
