@@ -21,10 +21,16 @@ The game boards were designed in Affinity Designer with imagery created by Dall-
 
 ## Play Pieces
 We created home made play pieces using a 2 colour 3D printer. OpenSCAD and STL files for these pieces are included in [3D_Printing_Designs](3D_Printing_Designs)
+
+![](images/pawn.jpg)
+
 ## Image Maps
 
 We created a python script to generate the core hexagon matrix that serves as the central game-space. 
+This is a customisable python script which creates an SVG for image-map type questions in ODK Ecosystem platforms.
+
 [python_script_generate_hexmap/trigram_generator_hexagons_central_origin.py](python_script_generate_hexmap/trigram_generator_hexagons_central_origin.py)
+
 If you need a differently sized game-board, you can modify the matrix by changing the settings in the python code. 
 
 Using Inkscape and BBEDit, we modified the image maps to include colour. The presence of colours really helps when transliterating data from the game board to the ODK Form. 
@@ -34,11 +40,10 @@ Using Inkscape and BBEDit, we modified the image maps to include colour. The pre
 
 
 
-## Creating am matrix
+## How the Image Map works
 
-This tool, found in the /tda folder includes a customisable python script which creates an SVG for image-map type questions in ODK Ecosystem platforms.
+The [python_script](python_script_generate_hexmap/trigram_generator_hexagons_central_origin.py) creates a ternary diagram with three variables. The main triangle consists of a 19x19 hexagonal map.
 
-The script creates a ternary diagram with three variables. The main triangle consists of a 19x19 hexagonal map.
 In ODK, the hexagons (which are painted transparently in SVG) become clickable and are mapped to a co-ordinate system which measures the triangular distance from the central hexagon. 
 
 The coordinates are a Hamming distance metric, so the furthest extreme corners are 12 edges away from the central point.
@@ -53,8 +58,7 @@ As you can see, a higher value in one vertex is associated with a lower score in
 This means that the scores on each 'axis' are not numerically important per se, but rather that the relationships between the numbers mean something
 It also provides for a pretty easy to understand visual device.
 
-You can probably easily transpose this to a square chart by doubling all the negative numbers on account of those coming from the side of the triangle that's half as long as the other one. 
+You can  easily transpose this to a square chart by doubling all the negative numbers on account of those coming from the side of the triangle that's half as long as the other one. 
 
-
-https://github.com/user-attachments/assets/551da741-6dda-4a41-8d1c-3434fce3ae3e
+![](images/BPA_movie.mp4)
 
