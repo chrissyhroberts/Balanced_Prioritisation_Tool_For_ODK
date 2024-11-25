@@ -1,0 +1,249 @@
+# Analysis of data from Balanced Prioritisation Tool
+
+```{r,echo=F,message=F,warning=F}
+library(tidyverse)
+library(ggtern)
+```
+
+# Get data and plot 3D ternary diagram
+
+```{r,echo=F,message=F,warning=F}
+df <- read_csv("trigram_example_data.csv") %>% 
+  separate(choose_hex, into = c("the_environment", "animals", "people"), sep = "_") %>% 
+  mutate(
+    the_environment = as.numeric(the_environment),
+    animals = as.numeric(animals),
+    people = as.numeric(people),
+    class = as.factor(c(1, 2, 1, 2, 3, 4, 1, 2, 3, 4, 1, 1, 2, 3, 2, 1, 3, 2, 3))
+  )
+
+# Add jitter to the coordinates
+df <- df %>%
+  mutate(
+    the_environment_jitter = jitter(the_environment, amount = 0.2),
+    animals_jitter = jitter(animals, amount = 0.2),
+    people_jitter = jitter(people, amount = 0.2)
+  )
+
+
+# Create the 3D plot with jittered coordinates
+plot <- plot_ly(
+    data = df, 
+    x = ~the_environment_jitter, 
+    y = ~animals_jitter, 
+    z = ~people_jitter, 
+    color = ~class, 
+    type = 'scatter3d', 
+    mode = 'markers',
+    marker = list(size = 8)
+  ) %>%
+  layout(
+    scene = list(
+      xaxis = list(title = 'Investment in the Environment'),
+      yaxis = list(title = 'Investment in Animals'),
+      zaxis = list(title = 'Investment in People')
+    ),
+    title = "3D Plot of Hexagonal Grid Data Colored by Class with Jitter"
+  )
+
+plot
+```
+# Cluster data
+
+```{r}
+library(cluster)
+
+# Assuming df already has the jittered data
+# Perform K-means clustering
+set.seed(123)  # For reproducibility
+kmeans_result <- kmeans(df[, c("the_environment_jitter", "animals_jitter", "people_jitter")], centers = 4)  # Adjust centers as needed
+
+# Add the cluster assignment to the data frame
+df <- df %>%
+  mutate(cluster = as.factor(kmeans_result$cluster))
+
+plot <- plot_ly(
+  data = df, 
+  x = ~the_environment_jitter, 
+  y = ~animals_jitter, 
+  z = ~people_jitter, 
+  color = ~cluster, 
+  marker = list(size = 4),
+  type = 'scatter3d',
+  mode = 'markers'
+) %>%
+  layout(
+    scene = list(
+      xaxis = list(title = 'Investment in the Environment'),
+      yaxis = list(title = 'Investment in Animals'),
+      zaxis = list(title = 'Investment in People')
+    ),
+    title = "3D Plot of Hexagonal Grid Data with Clusters"
+  )
+
+# Display the plot
+plot
+
+
+```
+## General statistics
+
+```{r}
+# Calculate summary statistics for each cluster
+cluster_summary <- df %>%
+  group_by(cluster) %>%
+  summarise(
+    mean_environment = mean(the_environment_jitter),
+    mean_animals = mean(animals_jitter),
+    mean_people = mean(people_jitter),
+    sd_environment = sd(the_environment_jitter),
+    sd_animals = sd(animals_jitter),
+    sd_people = sd(people_jitter),
+    n = n()  # Number of points in the cluster
+  )
+
+# Display the summary
+print(cluster_summary)
+```
+
+## ANOVA (Analysis of Variance)
+
+```{r}
+# Perform ANOVA for each variable across clusters
+anova_environment <- aov(the_environment_jitter ~ cluster, data = df)
+anova_animals <- aov(animals_jitter ~ cluster, data = df)
+anova_people <- aov(people_jitter ~ cluster, data = df)
+
+# Display the results
+summary(anova_environment)
+summary(anova_animals)
+summary(anova_people)
+```
+## PCA
+
+```{r}
+# Perform PCA
+pca_result <- prcomp(df[, c("the_environment_jitter", "animals_jitter", "people_jitter")], scale. = TRUE)
+
+# Summary of PCA
+summary(pca_result)
+
+# Plot the PCA results
+library(ggplot2)
+
+pca_df <- as.data.frame(pca_result$x)
+pca_df$cluster <- df$cluster
+
+# Extract the loadings
+loadings <- as.data.frame(pca_result$rotation)
+
+# Scale the loadings to make them more visible on the plot
+loadings <- loadings * 3  # Scaling factor can be adjusted as needed
+loadings$variable <- rownames(loadings)
+
+pca_plot <- ggplot(pca_df, aes(x = PC1, y = PC2, color = cluster)) +
+  geom_point(size = 3) +
+  stat_ellipse(type = "norm", linetype = 2) +  # Add ellipses
+  geom_segment(data = loadings, aes(x = 0, y = 0, xend = PC1, yend = PC2), 
+               arrow = arrow(length = unit(0.3, "cm")), color = "black", size = 1) +  # Add arrows
+  geom_text(data = loadings, aes(x = PC1, y = PC2, label = variable), 
+            color = "black", hjust = 0.5, vjust = 1.5, size = 3) +  # Add labels
+  labs(title = "PCA of Clustered Data with Ellipses and Loading Vectors",
+       x = "Principal Component 1",
+       y = "Principal Component 2") +
+  theme_minimal()
+# Display the plot
+print(pca_plot)
+```
+## Manova analysis
+
+```{r}
+# Extract the first two principal components (PC1 and PC2)
+pca_components <- pca_df[, c("PC1", "PC2")]
+
+# Add the cluster information
+pca_components$cluster <- df$cluster
+
+# Check the structure of the data
+head(pca_components)
+
+# Perform MANOVA
+manova_result <- manova(cbind(PC1, PC2) ~ cluster, data = pca_components)
+
+# Summary of MANOVA results
+summary(manova_result, test = "Pillai")
+
+```
+
+
+## Silhouette analysis
+```{r}
+library(cluster)
+
+# Calculate silhouette widths
+sil <- silhouette(kmeans_result$cluster, dist(df[, c("the_environment_jitter", "animals_jitter", "people_jitter")]))
+summary(sil)
+
+# Plot silhouette widths
+plot(sil, main = "Silhouette Plot for Clustering")
+
+```
+## Statistical between cluster test
+```{r}
+# Example: Comparing 'the_environment_jitter' between cluster 1 and cluster 2
+t_test_result <- t.test(the_environment_jitter ~ cluster, data = df %>% filter(cluster %in% c(1, 2)))
+
+# Display the t-test result
+print(t_test_result)
+
+
+```
+## Power calc
+```{r}
+library(MASS)
+
+simulate_manova_power <- function(groups, n_per_group, effect_size, n_simulations = 10000) {
+  power_count <- 0
+  
+  for (i in 1:n_simulations) {
+    # Simulate data
+    data <- data.frame(group = factor(rep(1:groups, each = n_per_group)))
+    data$PC1 <- rnorm(groups * n_per_group) + effect_size * as.numeric(data$group)
+    data$PC2 <- rnorm(groups * n_per_group) + effect_size * as.numeric(data$group)
+    
+    # Perform MANOVA
+    manova_result <- manova(cbind(PC1, PC2) ~ group, data = data)
+    
+    # Check if the test is significant
+    if (summary(manova_result)$stats[1, "Pr(>F)"] < 0.01) {
+      power_count <- power_count + 1
+    }
+  }
+  
+  # Calculate observed power
+  power <- power_count / n_simulations
+  return(power)
+}
+
+# Example: Simulate power with 2 groups
+power_2_groups_big_effect <- simulate_manova_power(groups = 2, n_per_group = 60, effect_size = 0.8)
+power_2_groups_medium_effect <- simulate_manova_power(groups = 2, n_per_group = 60, effect_size = 0.5)
+power_2_groups_small_effect <- simulate_manova_power(groups = 2, n_per_group = 60, effect_size = 0.25)
+
+power_2_groups_big_effect
+power_2_groups_medium_effect
+power_2_groups_small_effect
+
+# Example: Simulate power with 16 groups
+power_16_groups_big_effect <- simulate_manova_power(groups = 16, n_per_group = 50, effect_size = 0.8)
+power_16_groups_medium_effect <- simulate_manova_power(groups = 16, n_per_group = 50, effect_size = 0.5)
+power_16_groups_small_effect <- simulate_manova_power(groups = 16, n_per_group = 50, effect_size = 0.2)
+
+power_16_groups_big_effect
+power_16_groups_medium_effect
+power_16_groups_small_effect
+```
+
+
+
+
