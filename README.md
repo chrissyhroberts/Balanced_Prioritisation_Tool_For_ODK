@@ -1,4 +1,4 @@
-# ODK_image_maps
+# Balanced Prioritisation Tool for ODK
 A bunch of SVG files for use in trigram, digram and other image_maps
 
 ## Balanced Prioritisation Tool / Ternary decision allocator
